@@ -5,7 +5,7 @@ import { LogOut, Edit2, Save, MessageSquare, MapPin, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getUserSession, clearUserSession } from '@/lib/user-auth';
-import { getUserReports, updateUserProfile } from '@/app/user/actions';
+import { getUserReports, updateUserProfile } from '@/lib/user-actions';
 import { AnimalReport } from '@/lib/types';
 import { cn } from '@/lib/utils';
 

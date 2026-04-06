@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Phone, ArrowRight, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { sendOTP, verifyOTP } from '@/app/user/actions';
+import { sendOTP, verifyOTP } from '@/lib/user-actions';
 import { setUserSession } from '@/lib/user-auth';
 import { cn } from '@/lib/utils';
 

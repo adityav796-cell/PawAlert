@@ -112,7 +112,7 @@ export function UserLoginScreen({ onLoginSuccess }: UserLoginScreenProps) {
                   placeholder="9876543210"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  maxLength="10"
+                  maxLength={10}
                   disabled={loading}
                   className="flex-1"
                 />
@@ -149,7 +149,7 @@ export function UserLoginScreen({ onLoginSuccess }: UserLoginScreenProps) {
                 placeholder="000000"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                maxLength="6"
+                maxLength={6}
                 disabled={loading}
                 className="text-center text-2xl tracking-widest font-mono"
               />

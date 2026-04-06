@@ -64,10 +64,22 @@ export async function GET(request: Request) {
         const availableNGOs = getNGOsForArea(report.area, 'all');
 
         // Filter out already declined NGOs (using declined_count as proxy)
-        const nextNGO = availableNGOs[report.declined_count % availableNGOs.length];
+        const nextNGOName = availableNGOs[report.declined_count % availableNGOs.length];
 
-        if (!nextNGO) {
+        if (!nextNGOName) {
           console.warn(`[v0] No NGOs available for area: ${report.area}`);
+          continue;
+        }
+
+        // Fetch NGO details from database
+        const { data: ngoData, error: ngoError } = await supabase
+          .from('ngos')
+          .select('id, name, phone')
+          .eq('name', nextNGOName)
+          .single();
+
+        if (ngoError || !ngoData) {
+          console.error(`[v0] Error fetching NGO details for ${nextNGOName}:`, ngoError);
           continue;
         }
 
@@ -80,14 +92,16 @@ export async function GET(request: Request) {
           coordinates: { lat: report.lat, lng: report.lng },
         };
 
-        await notifyEscalation(transformedReport, nextNGO);
+        await notifyEscalation(transformedReport, ngoData);
 
         // Update last notified timestamp
         const { error: updateError } = await supabase
           .from('animal_reports')
           .update({
             last_ngo_notified_at: now.toISOString(),
-            last_ngo_notified_id: nextNGO.id,
+            last_ngo_notified_id: ngoData.id,
+            declined_count: report.declined_count + 1,
+            updated_at: now.toISOString(),
           })
           .eq('id', report.id);
 
@@ -95,7 +109,7 @@ export async function GET(request: Request) {
           console.error('[v0] Error updating report escalation:', updateError);
         } else {
           escalatedCount++;
-          console.log(`[v0] Escalated report ${report.id} to ${nextNGO.name}`);
+          console.log(`[v0] Escalated report ${report.id} to ${ngoData.name}`);
         }
       } catch (err) {
         console.error(`[v0] Error escalating report ${report.id}:`, err);

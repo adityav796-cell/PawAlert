@@ -36,9 +36,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Get NGOs for this area
-    const ngos = getNGOsForArea(report.area, 'ngo');
+    const ngoNames = getNGOsForArea(report.area, 'ngo');
 
-    if (ngos.length === 0) {
+    if (ngoNames.length === 0) {
       console.warn(`[v0] No NGOs available for area: ${report.area}`);
       return NextResponse.json({
         success: true,
@@ -47,8 +47,22 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // Fetch NGO details from database
+    const { data: ngosData, error: ngosError } = await supabase
+      .from('ngos')
+      .select('id, name, phone, areas')
+      .in('name', ngoNames);
+
+    if (ngosError || !ngosData || ngosData.length === 0) {
+      console.error('[v0] Error fetching NGO details:', ngosError);
+      return NextResponse.json({
+        success: false,
+        error: 'Failed to fetch NGO details',
+      });
+    }
+
     // Notify the first 3 NGOs
-    const ngosToNotify = ngos.slice(0, 3);
+    const ngosToNotify = ngosData.slice(0, 3);
     let notifiedCount = 0;
 
     const transformedReport = {

@@ -50,3 +50,8 @@ export function getNextNGOInPriority(
   
   return null;
 }
+
+export function getNGOsForArea(area: string, type: 'ngo' | 'all' = 'ngo'): string[] {
+  const city = getCityFromArea(area);
+  return getNGOPriorityList(city);
+}

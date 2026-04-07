@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { X, Phone, MessageCircle, MapPin, Clock, User, Building } from 'lucide-react';
 import { AnimalReport, RescueStatus } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -104,7 +105,7 @@ export function ReportDetailModal({ report, onClose }: ReportDetailModalProps) {
           <div className="flex items-center gap-3 px-4">
             <Clock className="w-5 h-5 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
-              Reported {formatTimeAgo(report.reportedAt)}
+              Reported <TimeAgoDisplay date={report.reportedAt} />
             </p>
           </div>
 
@@ -193,6 +194,37 @@ export function ReportDetailModal({ report, onClose }: ReportDetailModalProps) {
       </div>
     </div>
   );
+}
+
+function TimeAgoDisplay({ date }: { date: Date }) {
+  const [timeAgo, setTimeAgo] = useState('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+
+      if (diffMins < 60) {
+        setTimeAgo(`${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`);
+      } else {
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) {
+          setTimeAgo(`${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`);
+        } else {
+          const diffDays = Math.floor(diffHours / 24);
+          setTimeAgo(`${diffDays} day${diffDays !== 1 ? 's' : ''} ago`);
+        }
+      }
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [date]);
+
+  return <>{timeAgo || 'just now'}</>;
 }
 
 function formatTimeAgo(date: Date): string {

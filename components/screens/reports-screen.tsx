@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { ChevronRight, Clock } from 'lucide-react';
 import { AnimalReport, RescueStatus } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -103,7 +104,7 @@ export function ReportsScreen({ reports, onSelectReport }: ReportsScreenProps) {
                     {/* Time */}
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
                       <Clock className="w-3 h-3" />
-                      {formatTimeAgo(report.reportedAt)}
+                      <TimeAgoDisplay date={report.reportedAt} />
                     </span>
                   </div>
                 </div>
@@ -121,6 +122,37 @@ export function ReportsScreen({ reports, onSelectReport }: ReportsScreenProps) {
       </div>
     </div>
   );
+}
+
+function TimeAgoDisplay({ date }: { date: Date }) {
+  const [timeAgo, setTimeAgo] = useState('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const diffMs = now.getTime() - date.getTime();
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+
+      if (diffMins < 60) {
+        setTimeAgo(`${diffMins}m ago`);
+      } else {
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) {
+          setTimeAgo(`${diffHours}h ago`);
+        } else {
+          const diffDays = Math.floor(diffHours / 24);
+          setTimeAgo(`${diffDays}d ago`);
+        }
+      }
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [date]);
+
+  return <>{timeAgo || 'now'}</>;
 }
 
 function formatTimeAgo(date: Date): string {

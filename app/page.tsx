@@ -74,6 +74,10 @@ export default function PawAlertApp() {
     setActiveTab('home');
   };
 
+  const handleBackFromLogin = () => {
+    setActiveTab('home');
+  };
+
   const handleTabChange = (tab: TabType) => {
     // If user tab is selected and user is not logged in, show login
     if (tab === 'user' && !isUserLoggedInState) {
@@ -102,7 +106,7 @@ export default function PawAlertApp() {
   if (activeTab === 'user' && !isUserLoggedInState) {
     return (
       <div className="min-h-screen bg-background max-w-md mx-auto relative">
-        <UserLoginScreen onLoginSuccess={handleUserLogin} />
+        <UserLoginScreen onLoginSuccess={handleUserLogin} onBack={handleBackFromLogin} />
       </div>
     );
   }

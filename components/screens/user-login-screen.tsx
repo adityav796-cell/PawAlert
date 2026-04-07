@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Phone, ArrowRight, CheckCircle } from 'lucide-react';
+import { Phone, ArrowRight, CheckCircle, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { sendOTP, verifyOTP } from '@/lib/user-actions';
@@ -10,9 +10,10 @@ import { cn } from '@/lib/utils';
 
 interface UserLoginScreenProps {
   onLoginSuccess: () => void;
+  onBack?: () => void;
 }
 
-export function UserLoginScreen({ onLoginSuccess }: UserLoginScreenProps) {
+export function UserLoginScreen({ onLoginSuccess, onBack }: UserLoginScreenProps) {
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
@@ -71,6 +72,16 @@ export function UserLoginScreen({ onLoginSuccess }: UserLoginScreenProps) {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-orange-50 to-white p-4">
+      {/* Back Button */}
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="absolute top-4 left-4 p-2 hover:bg-gray-200 rounded-full transition-colors"
+        >
+          <ArrowLeft className="w-6 h-6 text-gray-700" />
+        </button>
+      )}
+      
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { LogOut, Edit2, Save, MessageSquare, MapPin, Clock } from 'lucide-react';
+import { LogOut, Edit2, Save, MessageSquare, MapPin, Clock, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getUserSession, clearUserSession } from '@/lib/user-auth';
@@ -11,9 +11,10 @@ import { cn } from '@/lib/utils';
 
 interface UserProfileScreenProps {
   onLogout: () => void;
+  onBack?: () => void;
 }
 
-export function UserProfileScreen({ onLogout }: UserProfileScreenProps) {
+export function UserProfileScreen({ onLogout, onBack }: UserProfileScreenProps) {
   const session = getUserSession();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(session?.name || '');
@@ -117,9 +118,19 @@ export function UserProfileScreen({ onLogout }: UserProfileScreenProps) {
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 pt-6">
         <div className="flex items-start justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold">My Profile</h1>
-            <p className="text-orange-100 text-sm">+91 {session.phoneNumber.slice(-10)}</p>
+          <div className="flex items-center gap-3">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+            )}
+            <div>
+              <h1 className="text-2xl font-bold">My Profile</h1>
+              <p className="text-orange-100 text-sm">+91 {session.phoneNumber.slice(-10)}</p>
+            </div>
           </div>
           <Button
             onClick={handleLogout}
